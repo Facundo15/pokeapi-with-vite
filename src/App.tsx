@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PokemonList from "./components/PokemonList";
 import { useState } from "react";
 import api from './api/axios';
@@ -45,7 +46,7 @@ function App() {
 
       if (data.results) {
         if (data.results.some((e: any) => e.url !== undefined)) {
-          data = (await Promise.all(data.results.map(e => {
+          data = (await Promise.all(data.results.map((e: { url: string; }) => {
             return api.get(e.url);
           }))).map(e => e.data);
 
@@ -53,14 +54,14 @@ function App() {
 
           switch (searchBy) {
             case 'weight':
-              data = data.filter(e => e.weight === weight)
+              data = data.filter((e: { weight: number; }) => e.weight === weight)
               break;
             case 'height':
-              data = data.filter(e => e.height === height)
+              data = data.filter((e: { height: number; }) => e.height === height)
               break;
             case 'ability':
-              data = data.filter(e => {
-                return e.abilities.some(j => j.ability.name === ability)
+              data = data.filter((e: { abilities: any[]; }) => {
+                return e.abilities.some((j: { ability: { name: string; }; }) => j.ability.name === ability)
               });
               break;
           }
@@ -73,7 +74,7 @@ function App() {
 
       console.log(data)
 
-      setPokemons(data.map(e => {
+      setPokemons(data.map((e: { name: any; base_experience: any; weight: any; height: any; id: any; sprites: { front_default: any; }; abilities: any[]; }) => {
         const pokemon: IPokemon = {
           name: e.name,
           baseExperience: e.base_experience,
@@ -81,7 +82,7 @@ function App() {
           height: e.height,
           id: e.id,
           imageUrl: e.sprites?.front_default,
-          abilities: e.abilities.map(e => e.ability.name)
+          abilities: e.abilities.map((e: { ability: { name: any; }; }) => e.ability.name)
         };
 
         return pokemon;
@@ -97,7 +98,7 @@ function App() {
     callApi();
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: { key: string; }) => {
     if (e.key === 'Enter') {
       searchSubmit();
     }
